@@ -4,8 +4,8 @@ import numpy as np
 import argparse
 import glob
 
-def prepare_io_paths(description="入出力の共通引数を処理"):
-    parser = argparse.ArgumentParser(description=description)
+def prepare_io_paths():
+    parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", required=True, help="入力ファイルまたはフォルダのパス")
     parser.add_argument("-o", "--output", required=True, default="outputs", help="出力ディレクトリパス")
     args = parser.parse_args()
