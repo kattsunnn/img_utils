@@ -19,6 +19,14 @@ def prepare_io_paths(description="入出力の共通引数を処理"):
 
     return input_path, output_path
 
+def load_img_paths_from_dir(dir_path):
+    img_paths = []
+    exts = ["jpg", "jpeg", "png"]
+    for ext in exts:
+        img_paths += glob.glob(os.path.join(dir_path, f"*.{ext}"))
+        img_paths += glob.glob(os.path.join(dir_path, f"*.{ext.upper()}"))
+    return img_paths
+
 def load_imgs(path):
 
     if os.path.isfile(path):
@@ -26,16 +34,13 @@ def load_imgs(path):
         return img
 
     elif os.path.isdir(path):
-        img_paths = []
-        exts = ["jpg", "jpeg", "png"]
-        for ext in exts:
-            img_paths += glob.glob(os.path.join(path, f"*.{ext}"))
-            img_paths += glob.glob(os.path.join(path, f"*.{ext.upper()}"))
+        img_paths = load_img_paths_from_dir(path)
         imgs = [cv2.imread(img_path) for img_path in img_paths ]
         return imgs
     
     else:
         raise ValueError(f"入力パスが存在しません: {path}")
+
 
 def save_imgs(imgs, output_path, file_name_pattern=f"img_{{}}", expand=".jpg"):
     os.makedirs(output_path, exist_ok=True)
