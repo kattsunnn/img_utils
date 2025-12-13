@@ -25,6 +25,8 @@ def load_img_paths_from_dir(dir_path):
     for ext in exts:
         img_paths += glob.glob(os.path.join(dir_path, f"*.{ext}"))
         img_paths += glob.glob(os.path.join(dir_path, f"*.{ext.upper()}"))
+    img_paths = list(set(img_paths))
+    img_paths.sort()
     return img_paths
 
 def load_imgs(path):
@@ -62,7 +64,10 @@ def show_imgs(imgs):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+if __name__ == '__main__':
+ 
+    import sys
 
-
-
-    
+    input_path = sys.argv[1]
+    img_paths = load_img_paths_from_dir(input_path)
+    print(img_paths)
