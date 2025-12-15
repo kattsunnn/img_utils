@@ -64,10 +64,84 @@ def show_imgs(imgs):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-if __name__ == '__main__':
- 
+def get_img_points_with_gui(img):
+    points = []
+    redo_stack = []
+    window_name="select points"
+    draw_img = img.copy() 
+
+    def redraw():
+        nonlocal draw_img
+        draw_img = img.copy()
+        for i, (x, y) in enumerate(points):
+            px, py = int(x), int(y)
+            cv2.circle(draw_img, (px, py), 5, (0, 0, 255), -1)
+            cv2.putText(
+                draw_img,
+                str(i),
+                (px + 6, py - 6),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0, 255, 0),
+                1,
+                cv2.LINE_AA
+            )
+        cv2.imshow(window_name, draw_img)
+
+    def mouse_callback(event, x, y, flags, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            points.append([x, y])
+            print(f"add: [{x}, {y}]")
+            redraw()
+
+    cv2.imshow(window_name, img)
+    cv2.setMouseCallback(window_name, mouse_callback)
+
+    print("操作方法: 左クリック=追加 / z=Undo / r=Redo / c=全削除 / q=終了")
+    while True:
+        key = cv2.waitKey(10) & 0xFF
+        # 1個前削除
+        if key == ord("z"):
+            if points:
+                p = points.pop()
+                redo_stack.append(p)
+                print(f"undo: {p}")
+                redraw()
+                
+        elif key == ord("r"):
+            if redo_stack:
+                p = redo_stack.pop()
+                points.append(p)
+                print(f"redo: {p}")
+                redraw()
+
+        elif key == ord("c"):
+            if points:
+                redo_stack.clear()
+                points.clear()
+                print("clear all points")
+                redraw()
+
+        elif key == ord("q"):
+            break
+
+    cv2.destroyWindow(window_name)
+    
+    print("\n[Final Points]")
+    for i, (x, y) in enumerate(points):
+        print(f"{i}: [{x}, {y}]")
+
+    return np.array(points), draw_img
+
+if __name__ == "__main__":
+    
     import sys
 
     input_path = sys.argv[1]
-    img_paths = load_img_paths_from_dir(input_path)
-    print(img_paths)
+    img = load_imgs(input_path)
+    points = get_img_points_with_gui(img)
+
+    # input_path = sys.argv[1]
+    # img_paths = load_img_paths_from_dir(input_path)
+    # print(img_paths)
+ 
