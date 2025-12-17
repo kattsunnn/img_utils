@@ -67,7 +67,7 @@ def show_imgs(imgs):
 def get_img_points_with_gui(img):
     points = []
     redo_stack = []
-    window_name="select points"
+    window_name="get_img_points_with_gui"
     draw_img = img.copy() 
 
     def redraw():
@@ -133,13 +133,50 @@ def get_img_points_with_gui(img):
 
     return np.array(points), draw_img
 
+def get_single_point_with_gui(img, scale=1.0):
+    window_name="get_single_point_with_gui"
+    point = None
+    scale_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+    draw_img = img.copy()
+
+    def mouse_callback(event, x, y, flags, param):
+        nonlocal point, draw_img
+        if event == cv2.EVENT_LBUTTONDOWN:
+            ox = round(x / scale)
+            oy = round(y / scale)
+            point = (ox, oy)
+            draw_img = scale_img.copy()
+            cv2.circle(draw_img, (x, y), 5, (0, 0, 255), -1)
+            cv2.imshow(window_name, draw_img)
+
+    cv2.imshow(window_name, scale_img)
+    cv2.setMouseCallback(window_name, mouse_callback)
+
+    print("左クリック：選択/再選択 / q：終了")
+
+    while True:
+        key = cv2.waitKey(10) & 0xFF
+        if key == ord("q"):  
+            break
+
+    cv2.destroyWindow(window_name)
+
+    if point is not None:
+        print(f"selected point: {point}")
+        return np.array(point, dtype=np.float32), draw_img
+    else:
+        print("no point selected")
+        return None
+
 if __name__ == "__main__":
     
     import sys
 
     input_path = sys.argv[1]
     img = load_imgs(input_path)
-    points = get_img_points_with_gui(img)
+    # points, draw_img = get_img_points_with_gui(img)
+    point, draw_img = get_single_point_with_gui(img)
+    show_imgs(draw_img)
 
     # input_path = sys.argv[1]
     # img_paths = load_img_paths_from_dir(input_path)
