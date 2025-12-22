@@ -194,6 +194,7 @@ if __name__ == "__main__":
     # img_paths = load_img_paths_from_dir(input_path)
     # print(img_paths)
  
+    # Todo: READMEの追加
     # load_coodinates_from_txtテスト
     txt_path = "./sample/sample.txt"
     coordinates = load_coodinates_from_txt(txt_path)
