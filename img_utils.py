@@ -168,17 +168,33 @@ def get_single_point_with_gui(img, scale=1.0):
         print("no point selected")
         return None
 
+def load_coodinates_from_txt(txt_path):
+    coordinates = []
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue  # 空行をスキップ
+            x, y = line.split()
+            coordinates.append([int(x), int(y)])
+    return coordinates
+
 if __name__ == "__main__":
     
     import sys
 
-    input_path = sys.argv[1]
-    img = load_imgs(input_path)
-    # points, draw_img = get_img_points_with_gui(img)
-    point, draw_img = get_single_point_with_gui(img)
-    show_imgs(draw_img)
+    # input_path = sys.argv[1]
+    # img = load_imgs(input_path)
+    # # points, draw_img = get_img_points_with_gui(img)
+    # point, draw_img = get_single_point_with_gui(img)
+    # print(point[0], point[1])
+    # show_imgs(draw_img)
 
     # input_path = sys.argv[1]
     # img_paths = load_img_paths_from_dir(input_path)
     # print(img_paths)
  
+    # load_coodinates_from_txtテスト
+    txt_path = "./sample/sample.txt"
+    coordinates = load_coodinates_from_txt(txt_path)
+    print(coordinates)
