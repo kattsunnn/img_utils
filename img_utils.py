@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import os
 import cv2
 import numpy as np
@@ -179,6 +180,15 @@ def load_coodinates_from_txt(txt_path):
             coordinates.append([int(x), int(y)])
     return coordinates
 
+def draw_points_on_img( img: np.array, points: List[Tuple[int, int]],
+                        color: Tuple[int, int, int] = (0,0,255), 
+                        size: int = 5
+                        ) -> np.ndarray:
+    output_img = img.copy()
+    for point in points:
+        cv2.circle(output_img, point, size, color, thickness=-1)
+    return output_img
+
 if __name__ == "__main__":
     
     import sys
@@ -196,6 +206,13 @@ if __name__ == "__main__":
  
     # Todo: READMEの追加
     # load_coodinates_from_txtテスト
-    txt_path = "./sample/sample.txt"
-    coordinates = load_coodinates_from_txt(txt_path)
-    print(coordinates)
+    # txt_path = "./sample/sample.txt"
+    # coordinates = load_coodinates_from_txt(txt_path)
+    # print(coordinates)
+
+    input_path = sys.argv[1]
+    img = load_imgs(input_path)
+    # point, _ = get_single_point_with_gui(img)
+    drawed_img = draw_points_on_img(img, [(100, 100)])
+    save_imgs(drawed_img, "./")
+    
