@@ -138,17 +138,17 @@ def get_single_point_with_gui(img, scale=1.0):
     window_name="get_single_point_with_gui"
     point = None
     scale_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
-    draw_img = img.copy()
+    drawn_img = img.copy()
 
     def mouse_callback(event, x, y, flags, param):
-        nonlocal point, draw_img
+        nonlocal point, drawn_img
         if event == cv2.EVENT_LBUTTONDOWN:
             ox = round(x / scale)
             oy = round(y / scale)
             point = (ox, oy)
-            draw_img = scale_img.copy()
-            cv2.circle(draw_img, (x, y), 5, (0, 0, 255), -1)
-            cv2.imshow(window_name, draw_img)
+            drawn_img = scale_img.copy()
+            cv2.circle(drawn_img, (x, y), 5, (0, 0, 255), -1)
+            cv2.imshow(window_name, drawn_img)
 
     cv2.imshow(window_name, scale_img)
     cv2.setMouseCallback(window_name, mouse_callback)
@@ -164,7 +164,7 @@ def get_single_point_with_gui(img, scale=1.0):
 
     if point is not None:
         print(f"selected point: {point}")
-        return np.array(point, dtype=np.float32), draw_img
+        return np.array(point, dtype=np.float32), drawn_img
     else:
         print("no point selected")
         return None
