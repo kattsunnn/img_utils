@@ -65,18 +65,18 @@ def show_imgs(imgs):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-def get_img_points_with_gui(img, scale=1.0):
+def get_img_points_with_gui(img, window_scale=1.0):
     window_name="get_img_points_with_gui"
     points = []
     redo_stack = []
-    scaled_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+    scaled_img = cv2.resize(img, None, fx=window_scale, fy=window_scale, interpolation=cv2.INTER_LINEAR)
     drawn_img = img.copy() 
 
     def redraw():
         nonlocal drawn_img
         drawn_img = scaled_img.copy()
         for i, (x, y) in enumerate(points):
-            scaled_x, scaled_y = round(x*scale), round(y*scale)
+            scaled_x, scaled_y = round(x*window_scale), round(y*window_scale)
             cv2.circle(drawn_img, (scaled_x, scaled_y), 5, (0, 0, 255), -1)
             cv2.putText(
                 drawn_img,
@@ -92,8 +92,8 @@ def get_img_points_with_gui(img, scale=1.0):
 
     def mouse_callback(event, scaled_x, scaled_y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
-            x = round(scaled_x / scale)
-            y = round(scaled_y / scale)
+            x = round(scaled_x / window_scale)
+            y = round(scaled_y / window_scale)
             points.append([x, y])
             print(f"add: [{x}, {y}]")
             redraw()
@@ -137,17 +137,17 @@ def get_img_points_with_gui(img, scale=1.0):
 
     return np.array(points), drawn_img
 
-def get_single_point_with_gui(img, scale=1.0):
+def get_single_point_with_gui(img, window_scale=1.0):
     window_name="get_single_point_with_gui"
     point = None
-    scale_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+    scale_img = cv2.resize(img, None, fx=window_scale, fy=window_scale, interpolation=cv2.INTER_LINEAR)
     drawn_img = img.copy()
 
     def mouse_callback(event, x, y, flags, param):
         nonlocal point, drawn_img
         if event == cv2.EVENT_LBUTTONDOWN:
-            ox = round(x / scale)
-            oy = round(y / scale)
+            ox = round(x / window_scale)
+            oy = round(y / window_scale)
             point = (ox, oy)
             drawn_img = scale_img.copy()
             cv2.circle(drawn_img, (x, y), 5, (0, 0, 255), -1)
@@ -197,8 +197,8 @@ if __name__ == "__main__":
     import sys
 
     input_path = sys.argv[1]
-    scale = float(sys.argv[2])
+    window_scale = float(sys.argv[2])
     img = load_imgs(input_path)
-    points, img = get_img_points_with_gui(img, scale)
+    points, img = get_img_points_with_gui(img, window_scale)
     print(type(points))
     show_imgs(img) 
