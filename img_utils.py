@@ -65,37 +65,40 @@ def show_imgs(imgs):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-def get_img_points_with_gui(img):
+def get_img_points_with_gui(img, scale=1.0):
+    window_name="get_img_points_with_gui"
     points = []
     redo_stack = []
-    window_name="get_img_points_with_gui"
-    draw_img = img.copy() 
+    scaled_img = cv2.resize(img, None, fx=scale, fy=scale, interpolation=cv2.INTER_LINEAR)
+    drawn_img = img.copy() 
 
     def redraw():
-        nonlocal draw_img
-        draw_img = img.copy()
+        nonlocal drawn_img
+        drawn_img = scaled_img.copy()
         for i, (x, y) in enumerate(points):
-            px, py = int(x), int(y)
-            cv2.circle(draw_img, (px, py), 5, (0, 0, 255), -1)
+            scaled_x, scaled_y = round(x*scale), round(y*scale)
+            cv2.circle(drawn_img, (scaled_x, scaled_y), 5, (0, 0, 255), -1)
             cv2.putText(
-                draw_img,
+                drawn_img,
                 str(i),
-                (px + 6, py - 6),
+                (scaled_x + 6, scaled_y - 6),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
                 (0, 255, 0),
                 1,
                 cv2.LINE_AA
             )
-        cv2.imshow(window_name, draw_img)
+        cv2.imshow(window_name, drawn_img)
 
-    def mouse_callback(event, x, y, flags, param):
+    def mouse_callback(event, scaled_x, scaled_y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
+            x = round(scaled_x / scale)
+            y = round(scaled_y / scale)
             points.append([x, y])
             print(f"add: [{x}, {y}]")
             redraw()
 
-    cv2.imshow(window_name, img)
+    cv2.imshow(window_name, scaled_img)
     cv2.setMouseCallback(window_name, mouse_callback)
 
     print("操作方法: 左クリック=追加 / z=Undo / r=Redo / c=全削除 / q=終了")
@@ -132,7 +135,7 @@ def get_img_points_with_gui(img):
     for i, (x, y) in enumerate(points):
         print(f"{i}: [{x}, {y}]")
 
-    return np.array(points), draw_img
+    return np.array(points), drawn_img
 
 def get_single_point_with_gui(img, scale=1.0):
     window_name="get_single_point_with_gui"
@@ -193,26 +196,9 @@ if __name__ == "__main__":
     
     import sys
 
-    # input_path = sys.argv[1]
-    # img = load_imgs(input_path)
-    # # points, draw_img = get_img_points_with_gui(img)
-    # point, draw_img = get_single_point_with_gui(img)
-    # print(point[0], point[1])
-    # show_imgs(draw_img)
-
-    # input_path = sys.argv[1]
-    # img_paths = load_img_paths_from_dir(input_path)
-    # print(img_paths)
- 
-    # Todo: READMEの追加
-    # load_coodinates_from_txtテスト
-    # txt_path = "./sample/sample.txt"
-    # coordinates = load_coodinates_from_txt(txt_path)
-    # print(coordinates)
-
     input_path = sys.argv[1]
+    scale = float(sys.argv[2])
     img = load_imgs(input_path)
-    # point, _ = get_single_point_with_gui(img)
-    drawed_img = draw_points_on_img(img, [(100, 100)])
-    save_imgs(drawed_img, "./")
-    
+    points, img = get_img_points_with_gui(img, scale)
+    print(type(points))
+    show_imgs(img) 
