@@ -65,6 +65,7 @@ def show_imgs(imgs):
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
+# Todo: 点の大きさを調節できる引数を追加
 def get_img_points_with_gui(img, window_scale=1.0):
     window_name="get_img_points_with_gui"
     points = []
@@ -101,11 +102,11 @@ def get_img_points_with_gui(img, window_scale=1.0):
     cv2.imshow(window_name, scaled_img)
     cv2.setMouseCallback(window_name, mouse_callback)
 
-    print("操作方法: 左クリック=追加 / z=Undo / r=Redo / c=全削除 / q=終了")
+    print("操作方法: 左クリック=追加 / u=Undo / r=Redo / c=全削除 / q=終了")
     while True:
         key = cv2.waitKey(10) & 0xFF
         # 1個前削除
-        if key == ord("z"):
+        if key == ord("u"):
             if points:
                 p = points.pop()
                 redo_stack.append(p)
