@@ -45,7 +45,7 @@ def save_imgs(imgs, output_path, file_name="output_img", file_name_pattern=f"img
     os.makedirs(output_path, exist_ok=True)
     if isinstance(imgs, np.ndarray):
         file_path = os.path.join(output_path, file_name, expand)
-        cv2.imwrite(file_path, img)
+        cv2.imwrite(file_path, imgs)
         print(f"{file_path}を保存しました")
     if isinstance(imgs, list):
         for i, img in enumerate(imgs):
