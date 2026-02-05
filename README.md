@@ -1,111 +1,128 @@
 # img_utils
-OpenCV (`cv2`) と NumPy を使った簡単な画像入出力ユーティリティ集です。画像の読み込み、保存、表示を行う軽量なヘルパー関数を提供します。
 
-## セットアップ
-- 仮想環境を作成して依存ライブラリ（`requirements.txt`）をインストールしてください。
+画像処理ユーティリティ集。
 
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+## img_utils.py
 
-## リファレンス
+コマンドライン引数で指定した画像ファイルまたはフォルダを読み込み、表示や保存、GUIでの点取得などのユーティリティ関数を提供します。簡易的なCLIエントリポイントも含まれます。
 
-### `prepare_io_paths()`
-- 説明: CLI 風に `-i/--input` と `-o/--output` をパースして、絶対パスを返します。出力ディレクトリを自動作成します。
-- 引数: なし
-- 戻り値: `(input_path, output_path)` — 両方とも絶対パスの文字列。
+> ### prepare_io_paths
 
-例:
+コマンドライン引数を解析し、入力パスと出力ディレクトリの絶対パスを返します。出力ディレクトリが存在しなければ作成します。
 
-```python
-from img_utils import prepare_io_paths
+**引数**
 
-input_path, output_path = prepare_io_paths()
-print(input_path, output_path)
-```
+- **なし:** argparseで`-i/--input` と `-o/--output` を受け取ります
 
-コマンドライン例:
+**戻り値**
 
-```bash
-python your_script.py -i ./images -o ./outputs
-```
+- **(input_path, output_path):** 入力パスと出力ディレクトリの絶対パス（両方とも文字列）
 
-### `load_img_paths_from_dir(dir_path)`
-- 説明: 指定ディレクトリ内の画像ファイルパスを収集します。対応拡張子は `jpg`, `jpeg`, `png`（大文字小文字両対応）。
-- 引数:
-	- `dir_path` (str): ディレクトリのパス。
-- 戻り値: `list[str]` — 見つかった画像ファイルのパスのリスト（順序は `glob` に依存）。
+> ### load_img_paths_from_dir
 
-例:
-```python
-from img_utils import load_img_paths_from_dir
+指定ディレクトリ内の画像ファイル（jpg, jpeg, png）を検索してソート済みのパスリストを返します。
 
-paths = load_img_paths_from_dir('./images')
-for p in paths:
-		print(p)
-```
+**引数**
 
-### `load_imgs(path)`
-- 説明: ファイルまたはディレクトリから画像を読み込みます。
-- 引数:
-	- `path` (str): 画像ファイルのパス、または画像ファイルを含むディレクトリのパス。
-- 戻り値:
-	- ファイルを渡した場合: `numpy.ndarray`（画像データ）。
-	- ディレクトリを渡した場合: `list[numpy.ndarray]`（読み込んだ画像のリスト）。
-	- 存在しないパスなら `ValueError` を送出します。
-- 注意:
-	- `cv2.imread` が失敗すると `None` を返すので、呼び出し側でのチェックを推奨します。
+- **dir_path:** 検索対象ディレクトリのパス（文字列）
 
-例:
+**戻り値**
 
-```python
-from img_utils import load_imgs
+- **img_paths:** 画像ファイルパスのリスト（文字列のリスト）
 
-# 単一ファイル
-img = load_imgs('./images/sample.jpg')
-if img is None:
-		raise RuntimeError('読み込みに失敗しました')
+> ### load_imgs
 
-# ディレクトリ
-imgs = load_imgs('./images')
-print(len(imgs), 'images loaded')
-```
+ファイルパスがファイルなら1枚の画像を読み込み、ディレクトリならディレクトリ内の画像をリストとして読み込みます。存在しないパスは例外を投げます。
 
-### `save_imgs(imgs, output_path, file_name_pattern='img_{}', expand='.jpg')`
-- 説明: 画像（単体またはリスト）を指定ディレクトリに連番で保存します。
-- 引数:
-	- `imgs` (numpy.ndarray または list[numpy.ndarray]): 保存する画像。単一 ndarray を渡すと内部でリスト化されます。
-	- `output_path` (str): 保存先ディレクトリ。存在しない場合は作成されます。
-	- `file_name_pattern` (str): ファイル名フォーマット。`{}` が連番部分に置き換わります（例: `img_{}` → `img_0000.jpg`）。
-	- `expand` (str): 拡張子（デフォルトは `.jpg`）。
-- 戻り値: なし。保存したファイルパスを標準出力に出します。
+**引数**
 
-例:
-```python
-from img_utils import save_imgs, load_imgs
+- **path:** 画像ファイルまたはディレクトリのパス（文字列）
 
-imgs = load_imgs('./images')
-save_imgs(imgs, './outputs', file_name_pattern='frame_{}', expand='.png')
-```
+**戻り値**
 
-### `show_imgs(imgs)`
-- 説明: 画像（単体またはリスト）をウィンドウで表示します。キー入力で次の画像に進みます。
-- 引数:
-	- `imgs` (numpy.ndarray または list[numpy.ndarray]): 表示する画像。単一 ndarray を渡すと内部でリスト化されます。
-- 戻り値: なし。
-- 注意:
-	- GUI 環境（X サーバなど）が必要です。ヘッドレス環境では動作しません。
+- **img または imgs:** 単一画像は `numpy.ndarray`、複数は `list[numpy.ndarray]` を返します
 
-例:
-```python
-from img_utils import show_imgs, load_imgs
+> ### save_imgs
 
-img = load_imgs('./images/sample.jpg')
-show_imgs(img)
-```
+画像または画像リストを指定ディレクトリに保存します。出力ディレクトリがなければ作成します。
 
-## 注意事項
-- `cv2.imread` は読み込みに失敗した場合 `None` を返します。読み込んだ画像が `None` ではないことを確認してください。
-- 出力ファイル上書きの扱いやフォーマット変換をする場合は、`save_imgs` の `expand` を調整してください。
+**引数**
+
+- **imgs:** `numpy.ndarray` または画像のリスト
+- **output_path:** 保存先ディレクトリのパス（文字列）
+- **file_name_pattern:** ファイル名パターン（デフォルト: `img_{}`）
+- **expand:** ファイル拡張子（デフォルト: `.jpg`）
+
+**戻り値**
+
+- **なし:** ファイルをディスクに保存します（戻り値はありません）
+
+> ### show_imgs
+
+画像または画像リストをウィンドウで表示します。キー入力で次へ進めます。
+
+**引数**
+
+- **imgs:** `numpy.ndarray` または画像のリスト
+
+**戻り値**
+
+- **なし:** 画面表示のみ行います
+
+> ### get_img_points_with_gui
+
+GUI上で複数の点をマウスで指定できるインタラクティブ関数です。Undo/Redo/クリア操作に対応し、最終的な点群と描画済み画像を返します。
+
+**引数**
+
+- **img:** 入力画像（`numpy.ndarray`）
+- **window_scale:** 表示倍率（デフォルト: `1.0`）
+
+**戻り値**
+
+- **(points, drawn_img):** 選択点の配列（`numpy.ndarray`）と点を描画した画像（`numpy.ndarray`）
+
+> ### get_single_point_with_gui
+
+GUI上で単一の点を選択するための関数です。選択した点と描画画像を返します。点を選ばなかった場合は `None` を返します。
+
+**引数**
+
+- **img:** 入力画像（`numpy.ndarray`）
+- **window_scale:** 表示倍率（デフォルト: `1.0`）
+
+**戻り値**
+
+- **(point, drawn_img) または None:** 選択した点（`numpy.ndarray`）と描画画像（`numpy.ndarray`）。未選択時は `None`。
+
+> ### load_coodinates_from_txt
+
+テキストファイルから座標を読み込みます。ファイルは各行が `x y` の形式であることを想定します。
+
+**引数**
+
+- **txt_path:** 座標ファイルのパス（文字列）
+
+**戻り値**
+
+- **coordinates:** 整数座標のリスト（例: `[[x1, y1], [x2, y2], ...]`）
+
+> ### draw_points_on_img
+
+与えられた点群を画像上に円で描画して新しい画像を返します。
+
+**引数**
+
+- **img:** 入力画像（`numpy.ndarray`）
+- **points:** 描画する点のリスト（`List[Tuple[int, int]]`）
+- **color:** 円の色（`Tuple[int,int,int]`, デフォルト `(0,0,255)`）
+- **size:** 円の半径（整数, デフォルト `5`）
+
+**戻り値**
+
+- **output_img:** 点を描画した新しい画像（`numpy.ndarray`）
+
+---
+
+`img_utils.py` には簡易的な CLI エントリポイント（`if __name__ == "__main__"`）があり、コマンドラインから入力パスとウィンドウスケールを受け取って画像読み込み→点取得→表示を行います。
+
