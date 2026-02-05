@@ -2,23 +2,19 @@ from typing import List, Tuple
 import os
 import cv2
 import numpy as np
-import argparse
+import click
 import glob
 
-def prepare_io_paths():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", required=True, help="入力ファイルまたはフォルダのパス")
-    parser.add_argument("-o", "--output", required=True, default="outputs", help="出力ディレクトリパス")
-    args = parser.parse_args()
-
-    # 絶対パスに変換
-    input_path = os.path.abspath(args.input)
-    output_path = os.path.abspath(args.output)
-
-    # 出力フォルダ作成
-    os.makedirs(output_path, exist_ok=True)
-
-    return input_path, output_path
+def prepare_io_path(f):
+    f = click.option('-i', '--input_path',
+                  required=True,
+                  type=click.Path(exists=True, file_okay=True, dir_okay=True),
+                  help='入力パス（必須）')(f)
+    f = click.option('-o', '--output_path',
+                  required=True,
+                  type=click.Path(exists=False, file_okay=True, dir_okay=True),
+                  help='出力パス（必須）')(f)
+    return f
 
 def load_img_paths_from_dir(dir_path):
     img_paths = []
@@ -195,11 +191,8 @@ def draw_points_on_img( img: np.array, points: List[Tuple[int, int]],
 
 if __name__ == "__main__":
     
-    import sys
-
-    input_path = sys.argv[1]
-    window_scale = float(sys.argv[2])
-    img = load_imgs(input_path)
-    points, img = get_img_points_with_gui(img, window_scale)
-    print(type(points))
-    show_imgs(img) 
+    @click.command
+    @prepare_io_path
+    def test(input_path, output_path):
+        print(input_path, output_path)
+    test()
