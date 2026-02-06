@@ -135,7 +135,7 @@ def get_img_points_with_gui(img, window_scale=1.0):
     for i, (x, y) in enumerate(points):
         print(f"{i}: [{x}, {y}]")
 
-    return np.array(points), drawn_img
+    return np.array(points, dtype=np.float32), drawn_img
 
 def get_single_point_with_gui(img, window_scale=1.0):
     window_name="get_single_point_with_gui"
