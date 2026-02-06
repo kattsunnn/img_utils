@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import list, tuple
 import os
 import cv2
 import numpy as np
@@ -7,12 +7,12 @@ import glob
 
 def prepare_io_path(f):
     f = click.option('-i', '--input_path',
-                  required=True,
-                  type=click.Path(exists=True, file_okay=True, dir_okay=True),
+                  required=true,
+                  type=click.path(exists=true, file_okay=true, dir_okay=true),
                   help='入力パス（必須）')(f)
     f = click.option('-o', '--output_path',
-                  required=True,
-                  type=click.Path(exists=False, file_okay=True, dir_okay=True),
+                  required=true,
+                  type=click.path(exists=false, file_okay=true, dir_okay=true),
                   help='出力パス（必須）')(f)
     return f
 
@@ -38,11 +38,11 @@ def load_imgs(path):
         return imgs
     
     else:
-        raise ValueError(f"入力パスが存在しません: {path}")
+        raise valueerror(f"入力パスが存在しません: {path}")
 
 
 def save_imgs(imgs, output_path, file_name="output_img", file_name_pattern=f"img_{{}}", expand=".jpg"):
-    os.makedirs(output_path, exist_ok=True)
+    os.makedirs(output_path, exist_ok=true)
     if isinstance(imgs, np.ndarray):
         file_path = os.path.join(output_path, file_name + expand)
         cv2.imwrite(file_path, imgs)
@@ -61,15 +61,15 @@ def show_imgs(imgs):
         # ウィンドウ名を画像ごとに付ける
         win_name = f"img_{idx}" if len(imgs) > 1 else "img"
         cv2.imshow(win_name, img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        cv2.waitkey(0)
+        cv2.destroyallwindows()
 
-# Todo: 点の大きさを調節できる引数を追加
+# todo: 点の大きさを調節できる引数を追加
 def get_img_points_with_gui(img, window_scale=1.0):
     window_name="get_img_points_with_gui"
     points = []
     redo_stack = []
-    scaled_img = cv2.resize(img, None, fx=window_scale, fy=window_scale, interpolation=cv2.INTER_LINEAR)
+    scaled_img = cv2.resize(img, none, fx=window_scale, fy=window_scale, interpolation=cv2.inter_linear)
     drawn_img = img.copy() 
 
     def redraw():
@@ -78,20 +78,20 @@ def get_img_points_with_gui(img, window_scale=1.0):
         for i, (x, y) in enumerate(points):
             scaled_x, scaled_y = round(x*window_scale), round(y*window_scale)
             cv2.circle(drawn_img, (scaled_x, scaled_y), 5, (0, 0, 255), -1)
-            cv2.putText(
+            cv2.puttext(
                 drawn_img,
                 str(i),
                 (scaled_x + 6, scaled_y - 6),
-                cv2.FONT_HERSHEY_SIMPLEX,
+                cv2.font_hershey_simplex,
                 0.5,
                 (0, 255, 0),
                 1,
-                cv2.LINE_AA
+                cv2.line_aa
             )
         cv2.imshow(window_name, drawn_img)
 
     def mouse_callback(event, scaled_x, scaled_y, flags, param):
-        if event == cv2.EVENT_LBUTTONDOWN:
+        if event == cv2.event_lbuttondown:
             x = round(scaled_x / window_scale)
             y = round(scaled_y / window_scale)
             points.append([x, y])
@@ -99,11 +99,11 @@ def get_img_points_with_gui(img, window_scale=1.0):
             redraw()
 
     cv2.imshow(window_name, scaled_img)
-    cv2.setMouseCallback(window_name, mouse_callback)
+    cv2.setmousecallback(window_name, mouse_callback)
 
-    print("操作方法: 左クリック=追加 / u=Undo / r=Redo / c=全削除 / q=終了")
-    while True:
-        key = cv2.waitKey(10) & 0xFF
+    print("操作方法: 左クリック=追加 / u=undo / r=redo / c=全削除 / q=終了")
+    while true:
+        key = cv2.waitkey(10) & 0xff
         # 1個前削除
         if key == ord("u"):
             if points:
@@ -129,9 +129,9 @@ def get_img_points_with_gui(img, window_scale=1.0):
         elif key == ord("q"):
             break
 
-    cv2.destroyWindow(window_name)
+    cv2.destroywindow(window_name)
     
-    print("\n[Final Points]")
+    print("\n[final points]")
     for i, (x, y) in enumerate(points):
         print(f"{i}: [{x}, {y}]")
 
@@ -139,13 +139,13 @@ def get_img_points_with_gui(img, window_scale=1.0):
 
 def get_single_point_with_gui(img, window_scale=1.0):
     window_name="get_single_point_with_gui"
-    point = None
-    scale_img = cv2.resize(img, None, fx=window_scale, fy=window_scale, interpolation=cv2.INTER_LINEAR)
+    point = none
+    scale_img = cv2.resize(img, none, fx=window_scale, fy=window_scale, interpolation=cv2.inter_linear)
     drawn_img = img.copy()
 
     def mouse_callback(event, x, y, flags, param):
         nonlocal point, drawn_img
-        if event == cv2.EVENT_LBUTTONDOWN:
+        if event == cv2.event_lbuttondown:
             ox = round(x / window_scale)
             oy = round(y / window_scale)
             point = (ox, oy)
@@ -154,36 +154,36 @@ def get_single_point_with_gui(img, window_scale=1.0):
             cv2.imshow(window_name, drawn_img)
 
     cv2.imshow(window_name, scale_img)
-    cv2.setMouseCallback(window_name, mouse_callback)
+    cv2.setmousecallback(window_name, mouse_callback)
 
     print("左クリック：選択/再選択 / q：終了")
 
-    while True:
-        key = cv2.waitKey(10) & 0xFF
+    while true:
+        key = cv2.waitkey(10) & 0xff
         if key == ord("q"):  
             break
 
-    cv2.destroyWindow(window_name)
+    cv2.destroywindow(window_name)
 
-    if point is not None:
+    if point is not none:
         print(f"selected point: {point}")
         return np.array(point, dtype=np.float32), drawn_img
     else:
         print("no point selected")
-        return None
+        return none
 
-def load_coodinates_from_txt(txt_path):
-    coordinates = []
+def load_points_from_txt(txt_path):
+    points = []
     with open(txt_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue  # 空行をスキップ
             x, y = line.split()
-            coordinates.append([int(x), int(y)])
-    return coordinates
+            points.append([int(x), int(y)])
+    return points
 
-def draw_points_on_img( img: np.array, points: List[Tuple[int, int]],
+def draw_points_on_img( img: np.ndarray, points: np.ndarray,
                         color: Tuple[int, int, int] = (0,0,255), 
                         size: int = 5
                         ) -> np.ndarray:
@@ -198,4 +198,3 @@ if __name__ == "__main__":
     @prepare_io_path
     def test(input_path, output_path):
         print(input_path, output_path)
-    test()
