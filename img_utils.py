@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import click
 import glob
+from pathlib import Path
 
 def prepare_io_path(f):
     f = click.option('-i', '--input_path',
@@ -25,6 +26,13 @@ def load_img_paths_from_dir(dir_path):
     img_paths = list(set(img_paths))
     img_paths.sort()
     return img_paths
+
+def glob_file_paths_from_dir(dir_path: str, pattern: str="*.txt*" ) -> List[str]:
+    target_dir = Path(dir_path)
+    if not target_dir.exists():
+        raise FileNotFoundError()
+    file_paths = sorted([str(p) for p in target_dir.glob(pattern)])
+    return file_paths
 
 def load_imgs(path):
 
@@ -172,17 +180,6 @@ def get_single_point_with_gui(img, window_scale=1.0):
         print("no point selected")
         return None
 
-def load_points_from_txt(txt_path):
-    points = []
-    with open(txt_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue  # 空行をスキップ
-            x, y = line.split()
-            points.append([int(x), int(y)])
-    return points
-
 def draw_points_on_img( img: np.ndarray, points: np.ndarray,
                         color: Tuple[int, int, int] = (0,0,255), 
                         size: int = 5
@@ -195,8 +192,7 @@ def draw_points_on_img( img: np.ndarray, points: np.ndarray,
 
 if __name__ == "__main__":
     
-    @click.command
-    @prepare_io_path
-    def test(input_path, output_path):
-        print(input_path, output_path)
-    test()
+    import sys 
+    dir = sys.argv[1]
+    
+    print(glob_file_paths_from_dir(dir))
