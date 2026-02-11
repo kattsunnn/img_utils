@@ -17,7 +17,7 @@ def prepare_io_path(f):
                   help='出力パス（必須）')(f)
     return f
 
-def load_img_paths_from_dir(dir_path):
+def glob_img_paths_from_dir(dir_path):
     img_paths = []
     exts = ["jpg", "jpeg", "png"]
     for ext in exts:
@@ -41,7 +41,7 @@ def load_imgs(path):
         return img
 
     elif os.path.isdir(path):
-        img_paths = load_img_paths_from_dir(path)
+        img_paths = glob_img_paths_from_dir(path)
         imgs = [cv2.imread(img_path) for img_path in img_paths ]
         return imgs
     
