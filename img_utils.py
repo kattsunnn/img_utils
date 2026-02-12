@@ -57,7 +57,7 @@ def save_imgs(imgs, output_path, file_name="output_img", file_name_pattern=f"img
         print(f"{file_path}を保存しました")
     if isinstance(imgs, list):
         for i, img in enumerate(imgs):
-            file_name = file_name_pattern.format(f"{i:02d}") + expand
+            file_name = file_name_pattern.format(f"{i:03d}") + expand
             file_path = os.path.join(output_path, file_name)
             cv2.imwrite(file_path, img)
             print(f"{file_path} を保存しました")
