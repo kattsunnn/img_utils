@@ -49,18 +49,15 @@ def load_imgs(path):
         raise ValueError(f"入力パスが存在しません: {path}")
 
 
-def save_imgs(imgs, output_path, file_name="output_img", file_name_pattern=f"img_{{}}", expand=".jpg"):
+def save_imgs(imgs, output_path,  file_name_pattern=f"img_{{}}", expand=".jpg"):
     os.makedirs(output_path, exist_ok=True)
     if isinstance(imgs, np.ndarray):
-        file_path = os.path.join(output_path, file_name + expand)
-        cv2.imwrite(file_path, imgs)
-        print(f"{file_path}を保存しました")
-    if isinstance(imgs, list):
-        for i, img in enumerate(imgs):
-            file_name = file_name_pattern.format(f"{i:03d}") + expand
-            file_path = os.path.join(output_path, file_name)
-            cv2.imwrite(file_path, img)
-            print(f"{file_path} を保存しました")
+        imgs = [imgs]
+    for i, img in enumerate(imgs):
+        file_name = file_name_pattern.format(f"{i:03d}") + expand
+        file_path = os.path.join(output_path, file_name)
+        cv2.imwrite(file_path, img)
+        print(f"{file_path} を保存しました")
 
 def show_imgs(imgs):
     if isinstance(imgs, np.ndarray):
