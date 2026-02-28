@@ -9,9 +9,9 @@ authors = [
 
 requires-python = ">=3.12"
 dependencies = [
-    "click>=8.3.1",
-    "numpy>=2.4.2",
-    "opencv-python>=4.13.0.92",
+    "click",
+    "numpy",
+    "opencv-python",
 ]
 
 [build-system]
